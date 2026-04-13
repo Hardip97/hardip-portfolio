@@ -230,8 +230,10 @@ nav a.nav-hire::after { background: var(--white); }
 .scrub-sticky {
   position: sticky; top: 0; height: 100vh; overflow: hidden;
 }
-#scrub-video {
-  width: 100%; height: 100%; object-fit: cover; display: block;
+#scrub-canvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; display: block;
+  object-fit: cover;
 }
 .scrub-overlay {
   position: absolute; inset: 0;
@@ -507,14 +509,24 @@ nav a.nav-hire::after { background: var(--white); }
   width: 100%; height: 100%; object-fit: cover;
   transition: transform .5s ease;
 }
-.ap-card:hover video { transform: scale(1.04); }
+.ap-card:hover video { transform: scale(1.06); }
 .ap-card-info {
   position: absolute; bottom: 0; left: 0; right: 0; z-index: 2;
-  padding: 20px 18px;
-  background: linear-gradient(to top, rgba(0,0,0,0.92), transparent);
+  padding: 24px 20px 20px;
+  background: linear-gradient(to top, rgba(0,0,0,0.97) 60%, transparent);
+  transform: translateY(28px);
+  transition: transform 0.4s ease;
 }
-.ap-card-cat { font-family: var(--B); font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--red); margin-bottom: 5px; }
-.ap-card-name { font-family: var(--F); font-size: 20px; color: var(--white); line-height: 1.1; }
+.ap-card:hover .ap-card-info { transform: translateY(0); }
+.ap-card-cat { font-family: var(--B); font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--red); margin-bottom: 6px; }
+.ap-card-name { font-family: var(--F); font-size: 20px; color: var(--white); line-height: 1.1; margin-bottom: 10px; }
+.ap-card-desc-small {
+  font-family: var(--B); font-size: 11px; color: rgba(255,255,255,0.5);
+  line-height: 1.5; margin: 0;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s;
+}
+.ap-card:hover .ap-card-desc-small { opacity: 1; transform: translateY(0); }
 .ap-card-play {
   position: absolute; top: 50%; left: 50%;
   transform: translate(-50%,-50%);
@@ -697,154 +709,113 @@ footer p { font-size: 12px; color: var(--muted2); letter-spacing: 0.04em; }
 .d4 { transition-delay: .5s; }
 
 
-/* ══ OPTION L: STACKED CARDS WITH DEPTH ══ */
-.stack-outer {
-  position: relative;
-  width: 100%;
-  padding: 0 80px 80px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-}
-@media (max-width: 768px) { .stack-outer { padding: 0 24px 60px; } }
+/* ══ OPTION F: CURSOR-FOLLOW VIDEO PREVIEW ══ */
 
-/* Counter display */
-.stack-counter {
-  font-family: var(--F);
-  font-size: 13px;
-  letter-spacing: 0.2em;
-  color: var(--muted2);
-  text-align: center;
-  margin-bottom: 36px;
+/* Custom cursor */
+.wf-cursor {
+  position: fixed; z-index: 9999; pointer-events: none;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--red);
+  transform: translate(-50%, -50%);
+  transition: width 0.25s, height 0.25s, opacity 0.2s;
 }
-.stack-counter span { color: var(--red); }
+.wf-cursor.hovering { width: 4px; height: 4px; opacity: 0.5; }
 
-/* The deck container */
-.stack-deck {
-  position: relative;
-  width: 100%;
-  max-width: 860px;
-  height: 520px;
-  perspective: 1200px;
-  cursor: none;
-}
-@media (max-width: 768px) { .stack-deck { height: 380px; } }
-
-/* Each card */
-.stack-card {
-  position: absolute;
-  inset: 0;
-  border-radius: 8px;
+/* Floating ghost */
+.wf-ghost {
+  position: fixed; z-index: 9998; pointer-events: none;
+  width: 320px; height: 190px;
   overflow: hidden;
-  transform-origin: center bottom;
-  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1),
-              opacity   0.55s ease,
-              box-shadow 0.4s ease;
-  will-change: transform, opacity;
-  cursor: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(-1.5deg) scale(0.9);
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.23,1,0.32,1);
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.75);
 }
-
-.stack-card video {
+.wf-ghost.visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(-0.5deg) scale(1);
+}
+.wf-ghost-panel {
   position: absolute; inset: 0;
+  opacity: 0; transition: opacity 0.25s ease;
+}
+.wf-ghost-panel.active { opacity: 1; }
+.wf-ghost-panel video { width: 100%; height: 100%; object-fit: cover; }
+.wf-ghost-behance {
   width: 100%; height: 100%;
-  object-fit: cover; display: block;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px;
+  background: linear-gradient(135deg, #0a0a14, #14141f);
 }
+.wf-ghost-behance span {
+  font-family: var(--B); font-size: 9px; letter-spacing: 0.22em;
+  text-transform: uppercase; color: rgba(255,255,255,0.4); font-weight: 700;
+}
+.wf-ghost-behance svg { opacity: 0.35; }
 
-.stack-card-overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(to top,
-    rgba(0,0,0,0.92) 0%,
-    rgba(0,0,0,0.3) 50%,
-    rgba(0,0,0,0.1) 100%);
-  transition: opacity 0.3s ease;
-}
+/* Works list */
+.wf-wrap { padding: 0 80px; }
+@media (max-width: 768px) { .wf-wrap { padding: 0 28px; } }
+.wf-list { border-top: 1px solid var(--border); }
 
-.stack-card-info {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  padding: 32px 36px;
-  z-index: 2;
-  transform: translateY(6px);
-  transition: transform 0.4s ease;
+.wf-item {
+  display: flex; align-items: center;
+  padding: 30px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: none; position: relative;
+  transition: border-color 0.3s;
 }
-.stack-card.top .stack-card-info { transform: translateY(0); }
+.wf-item:hover { border-bottom-color: rgba(255,255,255,0.12); }
 
-.stack-card-num {
-  font-family: var(--F); font-size: 12px;
-  letter-spacing: 0.18em; color: var(--red);
-  margin-bottom: 8px; display: block;
+.wf-num {
+  font-family: var(--F); font-size: 11px; letter-spacing: 0.2em;
+  color: var(--red); width: 48px; flex-shrink: 0;
+  transition: transform 0.3s ease;
 }
-.stack-card-cat {
-  font-family: var(--B); font-size: 10px; font-weight: 700;
-  letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--chrome); margin-bottom: 10px; display: block;
-}
-.stack-card-title {
-  font-family: var(--F);
-  font-size: clamp(28px, 3.5vw, 46px);
-  letter-spacing: 0.5px; color: var(--white);
-  line-height: 1.0; margin-bottom: 16px;
-}
-.stack-card-meta {
-  display: flex; align-items: center; gap: 16px;
-}
-.stack-card-year {
-  font-family: var(--B); font-size: 11px; font-weight: 500;
-  letter-spacing: 0.12em; color: rgba(255,255,255,0.4);
-}
-.stack-card-action {
-  font-family: var(--B); font-size: 10px; font-weight: 700;
-  letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--red); display: flex; align-items: center; gap: 8px;
-  opacity: 0; transition: opacity 0.3s ease;
-}
-.stack-card.top .stack-card-action { opacity: 1; }
-.stack-card-action-icon {
-  width: 28px; height: 28px; border-radius: 50%;
-  border: 1px solid var(--red);
-  display: flex; align-items: center; justify-content: center;
-}
+.wf-item:hover .wf-num { transform: translateX(4px); }
 
-/* Top card glow */
-.stack-card.top {
-  box-shadow:
-    0 0 0 1px rgba(255,0,53,0.15),
-    0 30px 80px rgba(0,0,0,0.8),
-    0 0 60px rgba(255,0,53,0.12);
-}
-
-/* Nav buttons */
-.stack-nav {
-  display: flex; gap: 14px; align-items: center;
-  justify-content: center; margin-top: 40px;
-}
-.stack-btn {
-  width: 48px; height: 48px; border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: transparent; color: var(--white);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px; transition: border-color .2s, color .2s, transform .18s;
-  cursor: none;
-}
-.stack-btn:hover { border-color: var(--red); color: var(--red); transform: scale(1.06); }
-.stack-dots { display: flex; gap: 8px; align-items: center; }
-.stack-dot {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: rgba(255,255,255,0.2);
-  transition: all .3s; cursor: none;
-}
-.stack-dot.on { background: var(--red); width: 22px; border-radius: 3px; }
-
-/* Drag hint */
-.stack-hint {
-  margin-top: 18px;
-  font-family: var(--B); font-size: 10px; font-weight: 600;
+.wf-cat {
+  font-family: var(--B); font-size: 9px; font-weight: 700;
   letter-spacing: 0.22em; text-transform: uppercase;
-  color: rgba(255,255,255,0.18); text-align: center;
+  color: rgba(255,255,255,0.25); width: 210px; flex-shrink: 0;
+  transition: color 0.3s;
 }
-@media (max-width: 768px) {
-  .hstrip-card { flex: 0 0 280px; height: 420px; }
-  .hstrip-track { padding: 0 28px 20px; }
+.wf-item:hover .wf-cat { color: rgba(255,255,255,0.6); }
+
+.wf-title {
+  font-family: var(--F);
+  font-size: clamp(20px, 2.6vw, 38px);
+  letter-spacing: 0.4px; color: rgba(255,255,255,0.28);
+  line-height: 1.05; flex: 1;
+  transition: color 0.35s ease,
+              transform 0.35s cubic-bezier(0.23,1,0.32,1),
+              letter-spacing 0.35s ease;
+}
+.wf-item:hover .wf-title {
+  color: var(--white);
+  transform: translateX(8px);
+}
+
+.wf-year {
+  font-family: var(--B); font-size: 10px; letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.18); margin-left: 20px; flex-shrink: 0;
+  transition: color 0.3s;
+}
+.wf-item:hover .wf-year { color: rgba(255,255,255,0.5); }
+
+.wf-arrow {
+  font-size: 16px; color: var(--red); margin-left: 20px;
+  opacity: 0; transform: translateX(-6px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+.wf-item:hover .wf-arrow { opacity: 1; transform: translateX(0); }
+
+@media (max-width: 900px) {
+  .wf-cursor, .wf-ghost { display: none !important; }
+  .wf-title { color: var(--white) !important; transform: none !important; }
+  .wf-cat { display: none; }
+  .wf-item { cursor: pointer; }
 }
 
 /* ══ LOGO GRID ══ */
@@ -955,9 +926,7 @@ footer p { font-size: 12px; color: var(--muted2); letter-spacing: 0.04em; }
 <!-- SCROLL VIDEO SCRUB -->
 <section id="scrub-section">
   <div class="scrub-sticky">
-    <video id="scrub-video" muted playsinline preload="auto">
-      <source src="assets/videos/scroll-video.mp4" type="video/mp4">
-    </video>
+    <canvas id="scrub-canvas"></canvas>
     <div class="scrub-overlay"></div>
     <div class="scrub-ui">
       <p class="scrub-label">In Motion</p>
@@ -993,9 +962,9 @@ footer p { font-size: 12px; color: var(--muted2); letter-spacing: 0.04em; }
   </div>
 </section>
 
-<!-- RECENT WORKS — OPTION L: STACKED CARDS WITH DEPTH -->
+<!-- RECENT WORKS — OPTION F: CURSOR-FOLLOW VIDEO PREVIEW -->
 <section id="works">
-  <div class="works-top" style="padding:0 80px;display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:0;padding-bottom:48px;gap:16px;">
+  <div class="works-top" style="padding:0 80px;display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:64px;flex-wrap:wrap;gap:20px;">
     <div>
       <p class="s-label reveal">Selected Work</p>
       <h2 class="s-title reveal d1">RECENT<br><em>PROJECTS</em></h2>
@@ -1003,89 +972,71 @@ footer p { font-size: 12px; color: var(--muted2); letter-spacing: 0.04em; }
     <button class="view-link reveal d2" id="all-projects-btn">All Projects →</button>
   </div>
 
-  <div class="stack-outer">
-    <p class="stack-counter"><span id="stack-cur">01</span> / <span id="stack-tot">04</span></p>
+  <div class="wf-wrap">
+    <div class="wf-list">
 
-    <div class="stack-deck" id="stack-deck">
-
-      <div class="stack-card" data-idx="0" data-src="assets/videos/video1.mp4">
-        <video autoplay muted loop playsinline preload="auto"><source src="assets/videos/video1.mp4" type="video/mp4"></video>
-        <div class="stack-card-overlay"></div>
-        <div class="stack-card-info">
-          <span class="stack-card-num">01</span>
-          <span class="stack-card-cat">3D Product Visualisation</span>
-          <h3 class="stack-card-title">SURBHIKA PURE<br>PREMIUM AGARBATTI</h3>
-          <div class="stack-card-meta">
-            <span class="stack-card-year">2025</span>
-            <div class="stack-card-action">
-              <div class="stack-card-action-icon"><svg width="10" height="12" fill="white" viewBox="0 0 10 12"><path d="M1 1l8 5-8 5V1z"/></svg></div>
-              Play Video
-            </div>
-          </div>
-        </div>
+      <div class="wf-item" data-idx="0" data-src="assets/videos/video2.mp4">
+        <span class="wf-num">01</span>
+        <span class="wf-cat">3D Product Visualisation</span>
+        <h3 class="wf-title">SUMMERCOOL BIG-B JUMBO COOLER</h3>
+        <span class="wf-year">2025</span>
+        <span class="wf-arrow">→</span>
       </div>
 
-      <div class="stack-card" data-idx="1" data-src="assets/videos/video2.mp4">
-        <video autoplay muted loop playsinline preload="auto"><source src="assets/videos/video2.mp4" type="video/mp4"></video>
-        <div class="stack-card-overlay"></div>
-        <div class="stack-card-info">
-          <span class="stack-card-num">02</span>
-          <span class="stack-card-cat">3D Product Visualisation</span>
-          <h3 class="stack-card-title">SUMMERCOOL<br>PRODUCT VISUALISATION</h3>
-          <div class="stack-card-meta">
-            <span class="stack-card-year">2025</span>
-            <div class="stack-card-action">
-              <div class="stack-card-action-icon"><svg width="10" height="12" fill="white" viewBox="0 0 10 12"><path d="M1 1l8 5-8 5V1z"/></svg></div>
-              Play Video
-            </div>
-          </div>
-        </div>
+      <div class="wf-item" data-idx="1" data-src="assets/videos/video1.mp4">
+        <span class="wf-num">02</span>
+        <span class="wf-cat">3D Product Visualisation</span>
+        <h3 class="wf-title">SURBHIKA PURE PREMIUM AGARBATTI</h3>
+        <span class="wf-year">2025</span>
+        <span class="wf-arrow">→</span>
       </div>
 
-      <div class="stack-card" data-idx="2" data-src="assets/videos/video3.mp4">
-        <video autoplay muted loop playsinline preload="auto"><source src="assets/videos/video3.mp4" type="video/mp4"></video>
-        <div class="stack-card-overlay"></div>
-        <div class="stack-card-info">
-          <span class="stack-card-num">03</span>
-          <span class="stack-card-cat">AI Product AD</span>
-          <h3 class="stack-card-title">BOMBAY SHIRT<br>COMPANY PRODUCT REEL</h3>
-          <div class="stack-card-meta">
-            <span class="stack-card-year">2025</span>
-            <div class="stack-card-action">
-              <div class="stack-card-action-icon"><svg width="10" height="12" fill="white" viewBox="0 0 10 12"><path d="M1 1l8 5-8 5V1z"/></svg></div>
-              Play Video
-            </div>
-          </div>
-        </div>
+      <div class="wf-item" data-idx="2" data-src="assets/videos/checkcars24-porsche.mp4">
+        <span class="wf-num">03</span>
+        <span class="wf-cat">AI Generated Video</span>
+        <h3 class="wf-title">CHECKCARS24 PORSCHE REEL</h3>
+        <span class="wf-year">2025</span>
+        <span class="wf-arrow">→</span>
       </div>
 
-      <div class="stack-card" data-idx="3" data-behance="https://www.behance.net/gallery/207076997/OCEANICA-BRAND-IDENTITY" data-src="assets/videos/video4.mp4">
-        <video autoplay muted loop playsinline preload="auto"><source src="assets/videos/video4.mp4" type="video/mp4"></video>
-        <div class="stack-card-overlay"></div>
-        <div class="stack-card-info">
-          <span class="stack-card-num">04</span>
-          <span class="stack-card-cat">3D Visualization & Branding</span>
-          <h3 class="stack-card-title">OCEANICA<br>WATER BOTTLES</h3>
-          <div class="stack-card-meta">
-            <span class="stack-card-year">2025</span>
-            <div class="stack-card-action">
-              <div class="stack-card-action-icon"><svg width="10" height="12" fill="white" viewBox="0 0 10 12"><path d="M8 4H4M4 4V8M4 4L10 10" stroke="white" stroke-width="1.5" fill="none"/></svg></div>
-              View on Behance
-            </div>
-          </div>
-        </div>
+      <div class="wf-item" data-idx="3" data-src="assets/videos/viral-vatika.mp4">
+        <span class="wf-num">04</span>
+        <span class="wf-cat">Real Estate Visualisation</span>
+        <h3 class="wf-title">VIRAL VATIKA LOCATION REVEAL</h3>
+        <span class="wf-year">2025</span>
+        <span class="wf-arrow">→</span>
       </div>
 
     </div>
-
-    <div class="stack-nav">
-      <button class="stack-btn" id="stack-prev">&#8592;</button>
-      <div class="stack-dots" id="stack-dots"></div>
-      <button class="stack-btn" id="stack-next">&#8594;</button>
-    </div>
-    <p class="stack-hint">Drag or click arrows to explore</p>
   </div>
 </section>
+
+<!-- Custom cursor -->
+<div class="wf-cursor" id="wf-cursor"></div>
+
+<!-- Floating video ghost -->
+<div class="wf-ghost" id="wf-ghost">
+  <div class="wf-ghost-panel active" data-panel="0">
+    <video autoplay muted loop playsinline preload="auto">
+      <source src="assets/videos/video2.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="wf-ghost-panel" data-panel="1">
+    <video autoplay muted loop playsinline preload="auto">
+      <source src="assets/videos/video1.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="wf-ghost-panel" data-panel="2">
+    <video autoplay muted loop playsinline preload="auto">
+      <source src="assets/videos/checkcars24-porsche.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="wf-ghost-panel" data-panel="3">
+    <video autoplay muted loop playsinline preload="auto">
+      <source src="assets/videos/viral-vatika.mp4" type="video/mp4">
+    </video>
+  </div>
+</div>
 
 <!-- FULLSCREEN LIGHTBOX -->
 <div id="lightbox">
@@ -1101,21 +1052,43 @@ footer p { font-size: 12px; color: var(--muted2); letter-spacing: 0.04em; }
   </div>
   <div class="ap-grid">
 
+    <div class="ap-card" data-src="assets/videos/video2.mp4">
+      <video autoplay muted loop playsinline preload="auto"><source src="assets/videos/video2.mp4" type="video/mp4"></video>
+      <div class="ap-card-play"><svg width="14" height="16" fill="white" viewBox="0 0 14 16"><path d="M1 1l12 7-12 7V1z"/></svg></div>
+      <div class="ap-card-info">
+        <p class="ap-card-cat">3D Product Visualisation</p>
+        <h3 class="ap-card-name">SUMMERCOOL BIG-B JUMBO COOLER</h3>
+        <p class="ap-card-desc-small">High-fidelity 3D product visualisation for a summer cooling brand built for advertising.</p>
+      </div>
+    </div>
+
     <div class="ap-card" data-src="assets/videos/video1.mp4">
       <video autoplay muted loop playsinline preload="auto"><source src="assets/videos/video1.mp4" type="video/mp4"></video>
       <div class="ap-card-play"><svg width="14" height="16" fill="white" viewBox="0 0 14 16"><path d="M1 1l12 7-12 7V1z"/></svg></div>
       <div class="ap-card-info">
         <p class="ap-card-cat">3D Product Visualisation</p>
         <h3 class="ap-card-name">SURBHIKA PURE PREMIUM AGARBATTI</h3>
+        <p class="ap-card-desc-small">3D product visualisation crafted to highlight texture, warmth and ritual.</p>
       </div>
     </div>
 
-    <div class="ap-card" data-src="assets/videos/video2.mp4">
-      <video autoplay muted loop playsinline preload="auto"><source src="assets/videos/video2.mp4" type="video/mp4"></video>
+    <div class="ap-card" data-src="assets/videos/checkcars24-porsche.mp4">
+      <video autoplay muted loop playsinline preload="auto"><source src="assets/videos/checkcars24-porsche.mp4" type="video/mp4"></video>
       <div class="ap-card-play"><svg width="14" height="16" fill="white" viewBox="0 0 14 16"><path d="M1 1l12 7-12 7V1z"/></svg></div>
       <div class="ap-card-info">
-        <p class="ap-card-cat">3D Product Visualisation</p>
-        <h3 class="ap-card-name">SUMMERCOOL PRODUCT VISUALISATION</h3>
+        <p class="ap-card-cat">AI Generated Video</p>
+        <h3 class="ap-card-name">CHECKCARS24 PORSCHE REEL</h3>
+        <p class="ap-card-desc-small">AI-generated automotive visual — cinematic and detail-driven for social and digital reach.</p>
+      </div>
+    </div>
+
+    <div class="ap-card" data-src="assets/videos/viral-vatika.mp4">
+      <video autoplay muted loop playsinline preload="auto"><source src="assets/videos/viral-vatika.mp4" type="video/mp4"></video>
+      <div class="ap-card-play"><svg width="14" height="16" fill="white" viewBox="0 0 14 16"><path d="M1 1l12 7-12 7V1z"/></svg></div>
+      <div class="ap-card-info">
+        <p class="ap-card-cat">Real Estate Visualisation</p>
+        <h3 class="ap-card-name">VIRAL VATIKA LOCATION REVEAL</h3>
+        <p class="ap-card-desc-small">Location showcase film blending atmosphere and architecture to attract premium buyers.</p>
       </div>
     </div>
 
@@ -1125,6 +1098,17 @@ footer p { font-size: 12px; color: var(--muted2); letter-spacing: 0.04em; }
       <div class="ap-card-info">
         <p class="ap-card-cat">AI Product AD</p>
         <h3 class="ap-card-name">BOMBAY SHIRT COMPANY PRODUCT REEL</h3>
+        <p class="ap-card-desc-small">AI-driven product ad combining fashion aesthetics with motion for digital campaigns.</p>
+      </div>
+    </div>
+
+    <div class="ap-card" data-src="assets/videos/underarmour-tvc.mp4">
+      <video autoplay muted loop playsinline preload="auto"><source src="assets/videos/underarmour-tvc.mp4" type="video/mp4"></video>
+      <div class="ap-card-play"><svg width="14" height="16" fill="white" viewBox="0 0 14 16"><path d="M1 1l12 7-12 7V1z"/></svg></div>
+      <div class="ap-card-info">
+        <p class="ap-card-cat">TVC Advertisement</p>
+        <h3 class="ap-card-name">UNDER ARMOUR TVC ADVERTISEMENT</h3>
+        <p class="ap-card-desc-small">High-energy TVC for Under Armour — cinematic post-production built for broadcast and digital.</p>
       </div>
     </div>
 
@@ -1138,6 +1122,7 @@ footer p { font-size: 12px; color: var(--muted2); letter-spacing: 0.04em; }
       <div class="ap-card-info">
         <p class="ap-card-cat">3D Visualization & Branding</p>
         <h3 class="ap-card-name">OCEANICA WATER BOTTLES</h3>
+        <p class="ap-card-desc-small">Full brand identity and 3D visualisation — from logo to lifestyle renders.</p>
       </div>
     </div>
 
@@ -1322,21 +1307,76 @@ if(iEl){
   setTimeout(function(){ ws.forEach(function(w){ w.classList.add('in'); }); }, 5000);
 }
 
-/* ── SCROLL VIDEO SCRUB ── */
-var sv = document.getElementById('scrub-video');
-var ss = document.getElementById('scrub-section');
-if(sv && ss){
-  function scrub(){
-    if(!sv.duration) return;
-    var r = ss.getBoundingClientRect();
-    var p = Math.min(1,Math.max(0,-r.top/(ss.offsetHeight-window.innerHeight)));
-    sv.currentTime = p * sv.duration;
-    var f=document.getElementById('scrub-fill'); if(f) f.style.height=(p*100)+'%';
-    var t=document.getElementById('scrub-pct'); if(t) t.textContent=Math.floor(p*100)+'%';
+/* ── JPEG SEQUENCE SCRUB ── */
+(function(){
+  var canvas = document.getElementById('scrub-canvas');
+  var ss     = document.getElementById('scrub-section');
+  if(!canvas || !ss) return;
+
+  var ctx    = canvas.getContext('2d');
+  var TOTAL  = 97;
+  var START  = 100; /* first frame number */
+  var BASE   = 'assets/images/scroll-frames/scroll-video_';
+  var frames = new Array(TOTAL);
+  var loaded = 0;
+  var curFrame = 0;
+
+  /* Size canvas to match display */
+  function resize(){
+    canvas.width  = canvas.offsetWidth  * window.devicePixelRatio;
+    canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+    drawFrame(curFrame);
   }
-  function startScrub(){ window.addEventListener('scroll',scrub,{passive:true}); scrub(); }
-  sv.readyState>=1 ? startScrub() : sv.addEventListener('loadedmetadata',startScrub,{once:true});
-}
+  window.addEventListener('resize', resize);
+
+  /* Draw a single frame — cover-fit into canvas */
+  function drawFrame(idx){
+    var img = frames[idx];
+    if(!img || !img.complete) return;
+    var cw = canvas.width, ch = canvas.height;
+    var iw = img.naturalWidth, ih = img.naturalHeight;
+    var scale = Math.max(cw/iw, ch/ih);
+    var dx = (cw - iw*scale)/2, dy = (ch - ih*scale)/2;
+    ctx.clearRect(0, 0, cw, ch);
+    ctx.drawImage(img, dx, dy, iw*scale, ih*scale);
+  }
+
+  /* Scroll handler */
+  function scrub(){
+    var r = ss.getBoundingClientRect();
+    var p = Math.min(1, Math.max(0, -r.top / (ss.offsetHeight - window.innerHeight)));
+    var idx = Math.min(TOTAL-1, Math.floor(p * TOTAL));
+    if(idx !== curFrame){ curFrame = idx; drawFrame(idx); }
+    var f = document.getElementById('scrub-fill');
+    var t = document.getElementById('scrub-pct');
+    if(f) f.style.height = (p*100) + '%';
+    if(t) t.textContent  = Math.floor(p*100) + '%';
+  }
+
+  /* Preload all frames */
+  for(var i = 0; i < TOTAL; i++){
+    (function(idx){
+      var img = new Image();
+      img.src = BASE + (START + idx) + '.jpg';
+      img.onload = function(){
+        frames[idx] = img;
+        loaded++;
+        /* Draw first frame as soon as it's ready */
+        if(idx === 0){ resize(); }
+        /* Once all loaded, start scrub listener */
+        if(loaded === TOTAL){
+          window.addEventListener('scroll', scrub, {passive:true});
+          scrub();
+        }
+      };
+      frames[idx] = img;
+    })(i);
+  }
+
+  /* Start scroll listener early (even while loading) */
+  window.addEventListener('scroll', scrub, {passive:true});
+  resize();
+})();
 
 /* ── LIGHTBOX ── */
 function openLB(src){
@@ -1359,114 +1399,63 @@ var lb=document.getElementById('lightbox');
 if(lb) lb.addEventListener('click',function(e){ if(e.target===lb) closeLB(); });
 document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeLB(); });
 
-/* ── STACKED CARDS ── */
+/* ── OPTION F: CURSOR-FOLLOW VIDEO PREVIEW ── */
 (function(){
-  var deck   = document.getElementById('stack-deck');
-  if(!deck) return;
-  var cards  = Array.from(deck.querySelectorAll('.stack-card'));
-  var dotsEl = document.getElementById('stack-dots');
-  var curEl  = document.getElementById('stack-cur');
-  var N      = cards.length;
-  var cur    = 0;
-  var dragging = false, dragSX = 0, dragMoved = false;
+  var cursor  = document.getElementById('wf-cursor');
+  var ghost   = document.getElementById('wf-ghost');
+  if(!cursor || !ghost) return;
 
-  /* Build dots */
-  cards.forEach(function(_,i){
-    var d = document.createElement('div');
-    d.className = 'stack-dot';
-    d.addEventListener('click', function(){ goTo(i); });
-    dotsEl.appendChild(d);
+  var items   = Array.from(document.querySelectorAll('.wf-item'));
+  var panels  = Array.from(ghost.querySelectorAll('.wf-ghost-panel'));
+  var mx = 0, my = 0, gx = 0, gy = 0;
+  var hovering = false;
+
+  function lerp(a, b, t){ return a + (b - a) * t; }
+
+  (function tick(){
+    gx = lerp(gx, mx, 0.1);
+    gy = lerp(gy, my, 0.1);
+    ghost.style.left = gx + 'px';
+    ghost.style.top  = gy + 'px';
+    cursor.style.left = mx + 'px';
+    cursor.style.top  = my + 'px';
+    requestAnimationFrame(tick);
+  })();
+
+  document.addEventListener('mousemove', function(e){
+    mx = e.clientX; my = e.clientY;
   });
 
-  function goTo(idx){
-    cur = ((idx % N) + N) % N;
-    render();
-  }
-
-  function render(){
-    var dots = dotsEl.querySelectorAll('.stack-dot');
-    /* Update counter */
-    if(curEl) curEl.textContent = (cur+1).toString().padStart(2,'0');
-    cards.forEach(function(card, i){
-      var offset = (i - cur + N) % N;
-      card.classList.remove('top');
-      /* offset 0 = top card, 1 = second, 2 = third, 3+ = hidden */
-      var tx = 0, ty = 0, tz = 0, ry = 0, sc = 1, op = 1;
-      if(offset === 0){
-        /* Top card — front and center */
-        tx=0; ty=0; tz=0; ry=0; sc=1; op=1;
-        card.classList.add('top');
-        card.style.zIndex = N;
-      } else if(offset === 1){
-        tx=18; ty=18; tz=-80; ry=-4; sc=0.96; op=0.75;
-        card.style.zIndex = N-1;
-      } else if(offset === 2){
-        tx=34; ty=34; tz=-160; ry=-8; sc=0.92; op=0.5;
-        card.style.zIndex = N-2;
-      } else {
-        tx=48; ty=48; tz=-240; ry=-12; sc=0.88; op=0;
-        card.style.zIndex = 0;
-      }
-      card.style.transform =
-        'translateX('+tx+'px) translateY('+ty+'px) translateZ('+tz+'px) rotateY('+ry+'deg) scale('+sc+')';
-      card.style.opacity = op;
-      card.style.pointerEvents = (offset === 0) ? 'auto' : 'none';
+  items.forEach(function(item, idx){
+    item.addEventListener('mouseenter', function(){
+      hovering = true;
+      ghost.classList.add('visible');
+      cursor.classList.add('hovering');
+      panels.forEach(function(p, i){ p.classList.toggle('active', i === idx); });
     });
-    dots.forEach(function(d,i){ d.classList.toggle('on', i===cur); });
-
-    /* Play top card video */
-    cards.forEach(function(card,i){
-      var v = card.querySelector('video');
-      if(!v) return;
-      v.muted = true;
-      if(i === cur){ v.play().catch(function(){}); }
-      else { v.pause(); }
+    item.addEventListener('mouseleave', function(){
+      hovering = false;
+      ghost.classList.remove('visible');
+      cursor.classList.remove('hovering');
     });
-  }
-
-  /* Arrow nav */
-  var prev = document.getElementById('stack-prev');
-  var next = document.getElementById('stack-next');
-  if(prev) prev.addEventListener('click', function(){ goTo(cur-1); });
-  if(next) next.addEventListener('click', function(){ goTo(cur+1); });
-
-  /* Click top card → lightbox or Behance */
-  deck.addEventListener('click', function(e){
-    if(dragging || dragMoved) return;
-    var topCard = cards[cur];
-    if(!topCard) return;
-    /* Only trigger if click was not on nav buttons */
-    var beh = topCard.dataset.behance;
-    var src = topCard.dataset.src;
-    if(beh) window.open(beh,'_blank');
-    else if(src) openLB(src);
+    item.addEventListener('click', function(){
+      var beh = item.dataset.behance;
+      var src = item.dataset.src;
+      if(beh) window.open(beh, '_blank');
+      else if(src) openLB(src);
+    });
   });
 
-  /* Drag to navigate */
-  deck.addEventListener('mousedown', function(e){
-    dragging=true; dragMoved=false; dragSX=e.clientX;
+  /* Subtle tilt on mouse move */
+  document.addEventListener('mousemove', function(e){
+    if(!hovering) return;
+    var cx = window.innerWidth / 2;
+    var cy = window.innerHeight / 2;
+    var rx = ((e.clientY - cy) / cy) * 5;
+    var ry = ((e.clientX - cx) / cx) * -5;
+    ghost.style.transform =
+      'translate(-50%,-50%) rotateX('+rx+'deg) rotateY('+ry+'deg) scale(1)';
   });
-  window.addEventListener('mouseup', function(e){
-    if(!dragging) return;
-    var dx = e.clientX - dragSX;
-    if(Math.abs(dx) > 50){ dragMoved=true; goTo(dx < 0 ? cur+1 : cur-1); }
-    dragging=false;
-    setTimeout(function(){ dragMoved=false; }, 50);
-  });
-  deck.addEventListener('touchstart', function(e){ dragSX=e.touches[0].clientX; dragMoved=false; },{passive:true});
-  deck.addEventListener('touchend', function(e){
-    var dx=e.changedTouches[0].clientX-dragSX;
-    if(Math.abs(dx)>50){ dragMoved=true; goTo(dx<0?cur+1:cur-1); }
-    setTimeout(function(){ dragMoved=false; },50);
-  },{passive:true});
-
-  /* Keyboard nav */
-  document.addEventListener('keydown', function(e){
-    if(e.key==='ArrowRight') goTo(cur+1);
-    if(e.key==='ArrowLeft')  goTo(cur-1);
-  });
-
-  render();
 })();
 
 /* ── ALL PROJECTS ── */

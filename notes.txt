@@ -1,0 +1,11 @@
+Version: v1.1
+Date: 2026-04-13
+
+Changes from v1.0:
+- Replaced stacked cards layout with Option F (cursor-follow video preview)
+- Recent Works now shows 4 projects: Summercool, Surbhika, CheckCars24 Porsche, Viral Vatika
+- Added project descriptions to all cards
+- Improved All Projects overlay hover — info slides up with description on hover
+- All Projects overlay now shows 7 projects (added CheckCars24, Viral Vatika, Under Armour TVC)
+- Replaced scroll-video.mp4 with 97-frame JPEG sequence for better cross-browser scrubbing
+- Added checkcars24-porsche.mp4, viral-vatika.mp4, underarmour-tvc.mp4 to assets
