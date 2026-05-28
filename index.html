@@ -132,14 +132,17 @@ section{position:relative;width:100%;}
   overflow:hidden;
 }
 
-/* Portrait — right side, starts below nav */
+/* Portrait — bleeds from right, fades into white on left */
 .hero-portrait-wrap{
   position:absolute;
   right:0;
   top:76px; /* clear the fixed nav */
-  width:58%;
+  width:72%;
   height:calc(100% - 76px);
   overflow:hidden;
+  /* fade left edge into white — removes hard boundary */
+  -webkit-mask-image:linear-gradient(to right, transparent 0%, black 22%);
+  mask-image:linear-gradient(to right, transparent 0%, black 22%);
 }
 .hero-portrait{
   position:absolute;
