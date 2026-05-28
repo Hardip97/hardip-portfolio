@@ -124,19 +124,47 @@ section{position:relative;width:100%;}
 .reveal-delay-3{transition-delay:.3s}
 
 /* ══════════════════════════════════════
-   HERO
+   HERO — single unified compartment
 ══════════════════════════════════════ */
 #hero{
   height:100vh;
-  display:flex;
+  position:relative;
   overflow:hidden;
 }
-.hero-left{
-  width:48%;
-  display:flex;flex-direction:column;
-  justify-content:flex-end;
-  padding:52px 0 60px 52px;
-  position:relative;z-index:2;
+
+/* Portrait — right side, starts below nav */
+.hero-portrait-wrap{
+  position:absolute;
+  right:0;
+  top:76px; /* clear the fixed nav */
+  width:58%;
+  height:calc(100% - 76px);
+  overflow:hidden;
+}
+.hero-portrait{
+  position:absolute;
+  width:100%;
+  height:120%;
+  top:-10%;
+  object-fit:cover;
+  object-position:center top;
+  filter:grayscale(1) contrast(1.05);
+  will-change:transform;
+}
+.portrait-placeholder{
+  position:absolute;inset:0;
+  width:100%;height:120%;top:-10%;
+  background:
+    radial-gradient(ellipse 55% 70% at 50% 30%, #D8D8D8 0%, #F0F0F0 40%, #FFFFFF 75%),
+    linear-gradient(180deg,#E8E8E8,#F5F5F5);
+}
+
+/* Text content — bottom-left, overlaid */
+.hero-content{
+  position:absolute;
+  bottom:60px;left:52px;
+  z-index:2;
+  max-width:480px;
 }
 .hero-tag{
   font-size:10px;letter-spacing:.2em;text-transform:uppercase;
@@ -186,29 +214,6 @@ section{position:relative;width:100%;}
 }
 .hero-scroll-txt{font-size:9px;letter-spacing:.2em;color:var(--light);text-transform:uppercase;font-weight:300;}
 
-/* hero portrait */
-.hero-right{
-  width:52%;
-  position:relative;
-  overflow:hidden;
-}
-.hero-portrait{
-  position:absolute;inset:0;
-  width:100%;
-  height:120%; /* extra for parallax */
-  top:-10%;
-  object-fit:cover;
-  object-position:center top;
-  filter:grayscale(1) contrast(1.05);
-  will-change:transform;
-}
-.portrait-placeholder{
-  position:absolute;inset:0;
-  width:100%;height:120%;top:-10%;
-  background:
-    radial-gradient(ellipse 55% 70% at 50% 30%, #D8D8D8 0%, #F0F0F0 40%, #FFFFFF 75%),
-    linear-gradient(180deg,#E8E8E8,#F5F5F5);
-}
 .hero-caption{
   position:absolute;bottom:32px;right:28px;
   font-size:9px;letter-spacing:.14em;color:rgba(10,10,10,.35);
@@ -535,11 +540,13 @@ footer{
 ══════════════════════════════════════ */
 @media(max-width:900px){
   #nav{padding:20px 24px;}
-  #hero{flex-direction:column;height:auto;}
-  .hero-left{width:100%;padding:100px 24px 52px;}
-  .hero-right{width:100%;height:65vw;min-height:300px;}
+  #hero{height:100vh;}
+  .hero-portrait-wrap{width:100%;top:0;height:100%;}
+  .hero-content{left:24px;bottom:44px;max-width:90%;}
+  .hero-name{font-size:clamp(52px,13vw,88px);}
   .hero-portrait,.portrait-placeholder{
     height:130%;top:-15%;
+    opacity:.5;
   }
   #manifesto{padding:72px 24px;}
   #work-header{padding:48px 24px 40px;flex-direction:column;align-items:flex-start;gap:16px;}
@@ -588,8 +595,21 @@ footer{
 
 <!-- ══ HERO ══════════════════════════════ -->
 <section id="hero">
-  <div class="hero-left">
-    <div class="hero-tag reveal">Motion Director &amp; Visual Artist</div>
+  <!-- Portrait: right side, below nav, parallax -->
+  <div class="hero-portrait-wrap" data-parallax-container>
+    <img
+      src="assets/images/portrait.jpg"
+      class="hero-portrait"
+      id="hero-portrait"
+      data-speed=".35"
+      onerror="this.style.display='none'"
+      alt="Hardipsinh Zala portrait">
+    <div class="portrait-placeholder" id="portrait-ph" data-speed=".35"></div>
+  </div>
+
+  <!-- Text: bottom-left, same single container -->
+  <div class="hero-content">
+    <div class="hero-tag reveal">Brand Film Maker &amp; Visual Storyteller</div>
     <div class="hero-name reveal reveal-delay-1">
       <span class="ln1">Hardipsinh</span>
       <span class="ln2">Zala</span>
@@ -604,17 +624,8 @@ footer{
       <div class="hero-scroll-txt">Scroll to explore</div>
     </div>
   </div>
-  <div class="hero-right" data-parallax-container>
-    <img
-      src="assets/images/portrait.jpg"
-      class="hero-portrait"
-      id="hero-portrait"
-      data-speed=".35"
-      onerror="this.style.display='none'"
-      alt="Hardipsinh Zala portrait">
-    <div class="portrait-placeholder" id="portrait-ph" data-speed=".35"></div>
-    <div class="hero-caption">Gujarat, India</div>
-  </div>
+
+  <div class="hero-caption">Gujarat, India</div>
 </section>
 
 <!-- ══ MANIFESTO ══════════════════════════ -->
@@ -626,7 +637,7 @@ footer{
     </div>
     <div class="manifesto-sub reveal reveal-delay-2">
       Every frame is a decision. Every edit a rhythm.<br>
-      Motion direction for brands that dare to be felt.
+      Brand films for brands that dare to be felt.
     </div>
   </div>
 </section>
