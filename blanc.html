@@ -226,6 +226,86 @@ section{position:relative;width:100%;}
 }
 
 /* ══════════════════════════════════════
+   SHOWREEL
+══════════════════════════════════════ */
+#showreel{
+  position:relative;
+  width:100%;
+  background:var(--fg);
+  overflow:hidden;
+}
+.showreel-inner{
+  position:relative;
+  width:100%;
+  aspect-ratio:16/9;
+  max-height:90vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.showreel-placeholder{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(160deg,#111 0%,#222 40%,#0a0a0a 100%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:24px;
+}
+.showreel-iframe{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  border:none;
+  display:none;
+}
+.showreel-play{
+  width:72px;height:72px;
+  border:1px solid rgba(255,255,255,.3);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  transition:border-color .3s, transform .3s;
+}
+.showreel-play:hover{
+  border-color:rgba(255,255,255,.9);
+  transform:scale(1.08);
+}
+.showreel-play-icon{
+  width:0;height:0;
+  border-style:solid;
+  border-width:11px 0 11px 20px;
+  border-color:transparent transparent transparent rgba(255,255,255,.85);
+  margin-left:4px;
+}
+.showreel-label{
+  font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(255,255,255,.4);font-weight:300;
+}
+.showreel-title{
+  font-family:var(--F);font-style:italic;
+  font-size:clamp(14px,2vw,22px);
+  color:rgba(255,255,255,.85);
+  letter-spacing:-.01em;
+  text-align:center;
+}
+.showreel-bar{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:20px 52px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid rgba(255,255,255,.08);
+}
+.showreel-bar-l{
+  font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,255,255,.35);font-weight:300;
+}
+.showreel-bar-r{
+  font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,255,255,.35);font-weight:300;
+}
+
+/* ══════════════════════════════════════
    MANIFESTO
 ══════════════════════════════════════ */
 #manifesto{
@@ -629,6 +709,31 @@ footer{
   </div>
 
   <div class="hero-caption">Gujarat, India</div>
+</section>
+
+<!-- ══ SHOWREEL ══════════════════════════ -->
+<section id="showreel">
+  <div class="showreel-inner">
+    <div class="showreel-placeholder">
+      <div class="showreel-label">Showreel</div>
+      <div class="showreel-play" id="showreel-play">
+        <div class="showreel-play-icon"></div>
+      </div>
+      <div class="showreel-title">Hardipsinh Zala — 2024</div>
+    </div>
+    <!-- Replace src with your YouTube/Vimeo embed URL when ready -->
+    <iframe
+      class="showreel-iframe"
+      id="showreel-iframe"
+      src=""
+      allow="autoplay; fullscreen"
+      allowfullscreen>
+    </iframe>
+    <div class="showreel-bar">
+      <div class="showreel-bar-l">Brand Films · TVC · Reels</div>
+      <div class="showreel-bar-r">2019 — 2025</div>
+    </div>
+  </div>
 </section>
 
 <!-- ══ MANIFESTO ══════════════════════════ -->
