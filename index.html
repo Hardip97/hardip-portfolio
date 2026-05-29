@@ -35,19 +35,19 @@ body{
   border-radius:50%;transform:translate(-50%,-50%);
 }
 #cur-dot{
-  width:7px;height:7px;
+  width:8px;height:8px;
   background:#fff;
-  box-shadow:0 0 0 1px rgba(0,0,0,0.3);
+  mix-blend-mode:difference;
   transition:width .2s,height .2s;
 }
 #cur-ring{
   width:36px;height:36px;
-  border:1px solid rgba(255,255,255,0.6);
-  box-shadow:0 0 0 1px rgba(0,0,0,0.12);
+  border:1.5px solid #fff;
   background:transparent;
+  mix-blend-mode:difference;
   transition:width .4s cubic-bezier(.23,1,.32,1),height .4s cubic-bezier(.23,1,.32,1);
 }
-body.cur-link #cur-dot{width:10px;height:10px;}
+body.cur-link #cur-dot{width:12px;height:12px;}
 body.cur-link #cur-ring{width:56px;height:56px;}
 body.cur-img #cur-ring{width:80px;height:80px;}
 
