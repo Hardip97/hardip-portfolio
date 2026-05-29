@@ -161,9 +161,6 @@ section{position:relative;width:100%;}
   overflow:hidden;
   -webkit-mask-image:linear-gradient(to right, transparent 0%, black 22%);
   mask-image:linear-gradient(to right, transparent 0%, black 22%);
-  transform-style:preserve-3d;
-  transition:transform .6s cubic-bezier(.23,1,.32,1);
-  will-change:transform;
 }
 .hero-portrait{
   position:absolute;
@@ -1226,22 +1223,6 @@ if(heroImg){
   heroImg.addEventListener('load',()=>{ if(heroPh) heroPh.style.display='none'; });
 }
 
-// ── 3D TILT on hero portrait
-const heroSection=document.getElementById('hero');
-const portraitWrap=document.querySelector('.hero-portrait-wrap');
-if(heroSection && portraitWrap){
-  heroSection.addEventListener('mousemove',e=>{
-    const r=heroSection.getBoundingClientRect();
-    const x=((e.clientX-r.left)/r.width-.5)*2;
-    const y=((e.clientY-r.top)/r.height-.5)*2;
-    const rotY=x*6;
-    const rotX=-y*4;
-    portraitWrap.style.transform=`perspective(1200px) rotateY(${rotY}deg) rotateX(${rotX}deg) scale(1.02)`;
-  });
-  heroSection.addEventListener('mouseleave',()=>{
-    portraitWrap.style.transform='perspective(1200px) rotateY(0deg) rotateX(0deg) scale(1)';
-  });
-}
 
 // ── INTERSECTION OBSERVER (reveals + video autoplay)
 function initReveal(){
