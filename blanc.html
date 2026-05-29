@@ -304,6 +304,12 @@ section{position:relative;width:100%;}
   font-size:10px;letter-spacing:.18em;text-transform:uppercase;
   color:rgba(255,255,255,.35);font-weight:300;
 }
+/* video always above placeholder */
+.proj-media video{ z-index:2; }
+.proj-media .proj-img{ z-index:1; }
+#showreel .proj-vid{ z-index:2; }
+#showreel .showreel-placeholder{ z-index:3; pointer-events:none; }
+#showreel.playing .showreel-placeholder{ opacity:0; transition:opacity .6s; }
 
 /* ══════════════════════════════════════
    MANIFESTO
@@ -1164,7 +1170,18 @@ function initReveal(){
       else{ v.pause(); }
     });
   },{threshold:.3});
-  document.querySelectorAll('.project,.proj-media').forEach(el=>vidObs.observe(el));
+  document.querySelectorAll('.project,.proj-media,#showreel').forEach(el=>vidObs.observe(el));
+
+  // Showreel play button
+  const srPlay=document.getElementById('showreel-play');
+  const srVid=document.getElementById('showreel-vid');
+  const srSec=document.getElementById('showreel');
+  if(srPlay && srVid){
+    srPlay.addEventListener('click',()=>{
+      srVid.play().catch(()=>{});
+      srSec && srSec.classList.add('playing');
+    });
+  }
 
   // Trigger reveals already in view
   document.querySelectorAll('.reveal').forEach(el=>{
