@@ -36,21 +36,20 @@ body{
 }
 #cur-dot{
   width:7px;height:7px;
-  background:#0A0A0A;
-  transition:width .2s,height .2s,background .3s;
+  background:#fff;
+  box-shadow:0 0 0 1px rgba(0,0,0,0.3);
+  transition:width .2s,height .2s;
 }
 #cur-ring{
   width:36px;height:36px;
-  border:1px solid rgba(10,10,10,0.25);
+  border:1px solid rgba(255,255,255,0.6);
+  box-shadow:0 0 0 1px rgba(0,0,0,0.12);
   background:transparent;
-  transition:width .4s cubic-bezier(.23,1,.32,1),height .4s cubic-bezier(.23,1,.32,1),border-color .3s;
+  transition:width .4s cubic-bezier(.23,1,.32,1),height .4s cubic-bezier(.23,1,.32,1);
 }
 body.cur-link #cur-dot{width:10px;height:10px;}
-body.cur-link #cur-ring{width:56px;height:56px;border-color:rgba(10,10,10,0.5);}
-body.cur-img #cur-ring{width:80px;height:80px;border-color:rgba(10,10,10,0.15);}
-/* invert on dark sections */
-body.dark-section #cur-dot{background:#fff;}
-body.dark-section #cur-ring{border-color:rgba(255,255,255,0.3);}
+body.cur-link #cur-ring{width:56px;height:56px;}
+body.cur-img #cur-ring{width:80px;height:80px;}
 
 /* ── LOADER ──────────────────────────── */
 #loader{
