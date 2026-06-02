@@ -725,34 +725,152 @@ footer{
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* ══════════════════════════════════════
-   MOBILE
+   MOBILE HAMBURGER MENU
+══════════════════════════════════════ */
+.nav-toggle{
+  display:none;
+  background:none;border:none;
+  width:28px;height:20px;
+  position:relative;
+  pointer-events:all;
+  cursor:pointer;
+  z-index:10;
+}
+.nav-toggle span{
+  display:block;
+  width:100%;height:1px;
+  background:var(--fg);
+  position:absolute;left:0;
+  transition:transform .3s, opacity .3s;
+}
+.nav-toggle span:nth-child(1){top:0}
+.nav-toggle span:nth-child(2){top:50%;transform:translateY(-50%)}
+.nav-toggle span:nth-child(3){bottom:0}
+.nav-toggle.open span:nth-child(1){top:50%;transform:translateY(-50%) rotate(45deg)}
+.nav-toggle.open span:nth-child(2){opacity:0}
+.nav-toggle.open span:nth-child(3){bottom:auto;top:50%;transform:translateY(-50%) rotate(-45deg)}
+body.dark-section .nav-toggle span{background:#F0F0F0;}
+
+/* ══════════════════════════════════════
+   MOBILE — TABLET (≤900px)
 ══════════════════════════════════════ */
 @media(max-width:900px){
-  #nav{padding:20px 24px;}
-  #hero{height:100vh;}
-  .hero-portrait-wrap{width:100%;top:0;height:100%;}
-  .hero-content{left:24px;bottom:44px;max-width:90%;}
-  .hero-name{font-size:clamp(52px,13vw,88px);}
-  .hero-portrait,.portrait-placeholder{
-    height:130%;top:-15%;
-    opacity:.5;
+  /* Hide custom cursor on touch devices */
+  body{cursor:auto;}
+  #cur-dot,#cur-ring{display:none !important;}
+
+  /* Nav — hamburger */
+  .nav-toggle{display:block;}
+  #nav{padding:16px 20px;}
+  .nav-links{
+    position:fixed;top:0;right:0;
+    width:100%;height:100vh;
+    background:rgba(255,255,255,0.97);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    flex-direction:column;
+    align-items:center;justify-content:center;
+    gap:28px;
+    transform:translateX(100%);
+    transition:transform .4s cubic-bezier(.23,1,.32,1);
+    z-index:5;
+    pointer-events:all;
   }
-  #manifesto{padding:72px 24px;}
-  #work-header{padding:48px 24px 40px;flex-direction:column;align-items:flex-start;gap:16px;}
+  .nav-links.open{transform:translateX(0);}
+  .nav-link{
+    font-size:13px;letter-spacing:.22em;
+    cursor:auto;
+  }
+  body.dark-section .nav-links{
+    background:rgba(10,10,10,0.97);
+  }
+
+  /* Hero */
+  #hero{height:100svh;}
+  .hero-portrait-wrap{
+    width:100%;top:0;height:100%;
+    -webkit-mask-image:linear-gradient(to top, transparent 0%, black 18%);
+    mask-image:linear-gradient(to top, transparent 0%, black 18%);
+  }
+  .hero-content{left:20px;bottom:36px;max-width:90%;}
+  .hero-name{font-size:clamp(48px,13vw,80px);}
+  .hero-portrait,.portrait-placeholder{
+    height:100%;top:0;opacity:.5;
+    object-position:center 15%;
+  }
+  .hero-caption{display:none;}
+
+  /* Manifesto */
+  #manifesto{padding:64px 20px;}
+
+  /* Showreel */
+  .showreel-bar{padding:16px 20px;flex-direction:column;gap:6px;align-items:flex-start;}
+  .showreel-bar-r{font-size:8px;}
+
+  /* Work header */
+  #work-header{padding:44px 20px 36px;flex-direction:column;align-items:flex-start;gap:12px;}
+
+  /* Projects */
   .project.layout-lv,
   .project.layout-rv{grid-template-columns:1fr;}
+  .project{min-height:auto;}
+  .project.layout-full{min-height:auto;}
+  .project.layout-full .proj-media{min-height:75vh;}
   .proj-media{min-height:55vw;}
-  .proj-info{padding:36px 24px;}
+  .proj-info{padding:32px 20px;}
+
+  /* Full-bleed overlay */
+  .full-info-overlay{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:20px;
+    padding:60px 20px 32px;
+  }
+  .full-right{text-align:left;}
+  .full-right .proj-meta{
+    align-items:flex-start;
+    flex-direction:row;
+    flex-wrap:wrap;
+    gap:16px;
+  }
+  .full-right .proj-meta-label{text-align:left;}
+  .full-right .proj-meta-val{text-align:left;font-size:12px;}
+  .full-left .proj-title{font-size:clamp(32px,9vw,56px);}
+
+  /* About */
   #about{grid-template-columns:1fr;}
-  .about-media{min-height:70vw;border-right:none;border-bottom:1px solid var(--rule);}
-  .about-content{padding:48px 24px;}
+  .about-media{min-height:65vw;border-right:none;border-bottom:1px solid var(--rule);}
+  .about-content{padding:44px 20px;}
+  .about-stats{grid-template-columns:repeat(3,1fr);}
+
+  /* Services */
+  #services{padding:48px 20px;}
   .svc-grid{grid-template-columns:repeat(2,1fr);}
-  #services{padding:56px 24px;}
-  #contact{padding:72px 24px 56px;}
-  .contact-row{flex-direction:column;gap:32px;}
+  .svc-item{padding:24px 20px 28px;}
+
+  /* Contact */
+  #contact{padding:64px 20px 48px;}
+  .contact-big{font-size:clamp(48px,14vw,96px);margin-bottom:48px;}
+  .contact-row{flex-direction:column;gap:28px;}
   .contact-social{text-align:left;}
-  footer{padding:20px 24px;flex-direction:column;gap:8px;align-items:flex-start;}
-  .contact-big{font-size:clamp(52px,14vw,100px);}
+
+  /* Footer */
+  footer{padding:16px 20px;flex-direction:column;gap:8px;align-items:flex-start;}
+}
+
+/* ══════════════════════════════════════
+   MOBILE — SMALL PHONES (≤480px)
+══════════════════════════════════════ */
+@media(max-width:480px){
+  .hero-name{font-size:clamp(40px,12vw,64px);}
+  .hero-intro{font-size:11px;}
+  .manifesto-text{font-size:clamp(28px,8vw,44px);}
+  .project.layout-full .proj-media{min-height:65vh;}
+  .svc-grid{grid-template-columns:1fr;}
+  .about-stats{grid-template-columns:1fr;}
+  .stat-n{font-size:28px;}
+  .contact-big{font-size:clamp(40px,12vw,72px);}
+  .contact-link{font-size:12px;}
+  .full-left .proj-title{font-size:clamp(28px,8vw,44px);}
 }
 </style>
 </head>
@@ -775,7 +893,10 @@ footer{
 <!-- NAV -->
 <nav id="nav">
   <div class="nav-logo">Hardipsinh Zala</div>
-  <div class="nav-links">
+  <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav-links" id="nav-links">
     <a class="nav-link" href="#work-header">Work</a>
     <a class="nav-link" href="#about">About</a>
     <a class="nav-link" href="#contact">Contact</a>
@@ -1275,8 +1396,9 @@ darkSections.forEach(s=>darkObs.observe(s));
 
 // Nav scroll shrink
 window.addEventListener('scroll',()=>{
+  const isMobile=window.innerWidth<=900;
   document.getElementById('nav').style.padding=
-    window.scrollY>60?'14px 52px':'20px 52px';
+    window.scrollY>60?(isMobile?'12px 20px':'14px 52px'):(isMobile?'16px 20px':'20px 52px');
 },{ passive:true });
 
 // Add play buttons to all full-bleed projects
@@ -1321,6 +1443,24 @@ modal.addEventListener('click',e=>{
     document.body.style.overflow='';
   }
 });
+
+// ── MOBILE HAMBURGER MENU
+const navToggle=document.getElementById('nav-toggle');
+const navLinks=document.getElementById('nav-links');
+if(navToggle&&navLinks){
+  navToggle.addEventListener('click',()=>{
+    navToggle.classList.toggle('open');
+    navLinks.classList.toggle('open');
+    document.body.style.overflow=navLinks.classList.contains('open')?'hidden':'';
+  });
+  navLinks.querySelectorAll('.nav-link').forEach(link=>{
+    link.addEventListener('click',()=>{
+      navToggle.classList.remove('open');
+      navLinks.classList.remove('open');
+      document.body.style.overflow='';
+    });
+  });
+}
 </script>
 
 <!-- Video Modal -->
