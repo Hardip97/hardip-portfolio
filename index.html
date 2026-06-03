@@ -1311,45 +1311,14 @@ loader.classList.add('go');
   setTimeout(()=>{if(loaded<total)finish();},8000);
 })();
 
-// ── SMOOTH SCROLL
-(function(){
-  // Skip on touch/mobile — let native scroll handle it
-  if('ontouchstart' in window || navigator.maxTouchPoints>0) return;
-
-  let cur=window.scrollY, dest=window.scrollY;
-  const ease=0.1;
-  function maxScroll(){ return Math.max(0, document.body.scrollHeight - window.innerHeight); }
-
-  window.addEventListener('wheel',e=>{
-    e.preventDefault();
-    // Normalize across mouse (DOM_DELTA_LINE/PAGE) and trackpad (DOM_DELTA_PIXEL)
-    let delta=e.deltaY;
-    if(e.deltaMode===1) delta*=40;      // line mode → pixels
-    if(e.deltaMode===2) delta*=800;     // page mode → pixels
-    dest=Math.max(0,Math.min(dest+delta, maxScroll()));
-  },{passive:false});
-
-  document.querySelectorAll('a[href^="#"]').forEach(a=>{
-    a.addEventListener('click',ev=>{
-      ev.preventDefault();
-      const el=document.getElementById(a.getAttribute('href').slice(1));
-      if(el) dest=Math.min(el.offsetTop, maxScroll());
-    });
+// ── ANCHOR SMOOTH SCROLL (native — no custom wheel hijack)
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',ev=>{
+    ev.preventDefault();
+    const el=document.getElementById(a.getAttribute('href').slice(1));
+    if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
   });
-
-  window._scrollY=()=>cur;
-
-  (function tick(){
-    const diff=dest-cur;
-    if(Math.abs(diff)>0.5){
-      cur+=diff*ease;
-      window.scrollTo(0,cur);
-    } else {
-      cur=dest;
-    }
-    requestAnimationFrame(tick);
-  })();
-})();
+});
 
 // ── CURSOR
 const dot=document.getElementById('cur-dot');
