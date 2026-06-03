@@ -381,6 +381,13 @@ section{position:relative;width:100%;}
   height:100vh;
   object-fit:contain;
 }
+/* reel / vertical video mode */
+#vid-modal.reel video{
+  width:auto;
+  height:100vh;
+  max-width:min(56vh, 100vw);
+  object-fit:contain;
+}
 #vid-modal-close{
   position:absolute;top:24px;right:32px;
   color:#fff;font-size:28px;cursor:pointer;
@@ -799,14 +806,15 @@ body.dark-section .nav-toggle span{background:#F0F0F0;}
   #hero{height:100svh;}
   .hero-portrait-wrap{
     width:100%;top:0;height:100%;
-    -webkit-mask-image:linear-gradient(to top, transparent 0%, black 18%);
-    mask-image:linear-gradient(to top, transparent 0%, black 18%);
+    /* Fade bottom-up so head stays fully visible, text area fades out */
+    -webkit-mask-image:linear-gradient(to top, transparent 0%, black 30%);
+    mask-image:linear-gradient(to top, transparent 0%, black 30%);
   }
   .hero-content{left:20px;bottom:36px;max-width:90%;}
   .hero-name{font-size:clamp(48px,13vw,80px);}
   .hero-portrait,.portrait-placeholder{
-    height:100%;top:0;opacity:.5;
-    object-position:center 15%;
+    height:100%;top:0;opacity:.55;
+    object-position:center top;
   }
   .hero-caption{display:none;}
 
@@ -1034,7 +1042,7 @@ body.dark-section .nav-toggle span{background:#F0F0F0;}
 </div>
 
 <!-- ══ PROJECT 03 — WARNER BROS ══════════════ -->
-<div class="project layout-full" data-parallax-container>
+<div class="project layout-full" data-parallax-container data-reel="true">
   <div class="proj-media">
     <video src="assets/videos/wb-occasion-ad.mp4" class="proj-vid" data-speed=".25" muted loop playsinline preload="none"></video>
     <div class="proj-img" style="background:linear-gradient(145deg,#0a0a1a 0%,#1a1a3d 45%,#0d0d2a 100%);filter:none;" data-speed=".25"></div>
@@ -1428,6 +1436,8 @@ document.querySelectorAll('.project.layout-full').forEach(proj=>{
   const btn=document.createElement('div');
   btn.className='proj-play-btn';
   btn.dataset.src=src;
+  // Mark vertical/reel format videos
+  if(proj.dataset.reel==='true') btn.dataset.reel='true';
   media.appendChild(btn);
 });
 
@@ -1445,6 +1455,12 @@ document.addEventListener('click',e=>{
     modalVid.src=btn.dataset.src;
     modalVid.play();
     modal.classList.add('open');
+    // Apply reel layout for vertical videos
+    if(btn.dataset.reel==='true'){
+      modal.classList.add('reel');
+    } else {
+      modal.classList.remove('reel');
+    }
     document.body.style.overflow='hidden';
   }
 });
