@@ -1042,7 +1042,7 @@ body.dark-section .nav-toggle span{background:#F0F0F0;}
 </div>
 
 <!-- ══ PROJECT 03 — WARNER BROS ══════════════ -->
-<div class="project layout-full" data-parallax-container data-reel="true">
+<div class="project layout-full" data-parallax-container data-reel="true" data-modal-src="assets/videos/WB OCCASION AD VIDEO REEL.mp4">
   <div class="proj-media">
     <video src="assets/videos/wb-occasion-ad.mp4" class="proj-vid" data-speed=".25" muted loop playsinline preload="none"></video>
     <div class="proj-img" style="background:linear-gradient(145deg,#0a0a1a 0%,#1a1a3d 45%,#0d0d2a 100%);filter:none;" data-speed=".25"></div>
@@ -1435,8 +1435,8 @@ document.querySelectorAll('.project.layout-full').forEach(proj=>{
   if(!media||!src) return;
   const btn=document.createElement('div');
   btn.className='proj-play-btn';
-  btn.dataset.src=src;
-  // Mark vertical/reel format videos
+  // Use separate modal src if specified, otherwise use the preview video
+  btn.dataset.src=proj.dataset.modalSrc || src;
   if(proj.dataset.reel==='true') btn.dataset.reel='true';
   media.appendChild(btn);
 });
